@@ -2,20 +2,22 @@
 
 **Font Helper wrote on top of Deno**
 
+> This is a fork of [castroclucas/figma-font-helper-deno](https://github.com/castroclucas/figma-font-helper-deno) updated for **Deno 2.x** compatibility.
+
 ## Prerequisites
 
-Just have [Deno](https://github.com/denoland/deno) installed.
+Just have [Deno](https://github.com/denoland/deno) installed (version 2.x or later).
 
 ## Run remotely
 
 ```bash
-deno run --allow-read --allow-run --allow-net https://raw.githubusercontent.com/castroclucas/figma-font-helper-deno/main/main.ts
+deno run --allow-read --allow-run --allow-net https://raw.githubusercontent.com/Baha-Abdelatif/figma-font-helper-deno/main/main.ts
 ```
 ## OR
 ## Install
 
 ```bash
-git clone https://github.com/castroclucas/linux-figma-helper-deno.git && cd linux-figma-helper-deno
+git clone https://github.com/Baha-Abdelatif/figma-font-helper-deno.git && cd figma-font-helper-deno
 ```
 ```bash
 ./run.sh
@@ -23,7 +25,12 @@ git clone https://github.com/castroclucas/linux-figma-helper-deno.git && cd linu
 
 ## How it works
 
-Everytime you open Figma on your browser, it tries to connect on a local server in order to retrieve system fonts. This is used within Figma's official apps, but, since they does not work in Linux, I wrote this script. 
+Everytime you open Figma on your browser, it tries to connect on a local server in order to retrieve system fonts. This is used within Figma's official apps, but, since they does not work in Linux, I wrote this script.
+
+## Changes from original
+
+- Replaced deprecated `Deno.run()` with `Deno.Command` (Deno 2.x)
+- Replaced `helpers.getQuery()` (removed in oak v17) with `context.request.url.searchParams.get()`
 
 ## Why
 

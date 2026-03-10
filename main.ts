@@ -7,7 +7,7 @@
 // dependencies: deno, bash
 //====================================
 
-import { Application, helpers, Router } from "https://deno.land/x/oak/mod.ts";
+import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
 
 const PORT = 18412;
@@ -37,9 +37,8 @@ const response: IResponse = {
 };
 
 // uses fc-list to gather all allowed fonts from the system, formatted in the following pattern
-const cmd = Deno.run({
-  cmd: [
-    "bash",
+const cmd = new Deno.Command("bash", {
+  args: [
     "-c",
     "fc-list --format '%{file}|%{family[0]}|%{weight}|%{style[0]}|%{postscriptname}\\n' | sort | grep -e '\\.ttf\\|\\.otf'",
   ],
@@ -48,7 +47,8 @@ const cmd = Deno.run({
 });
 
 // formats all fonts into the required format to be used by figma
-new TextDecoder().decode(await cmd.output()).split("\n").forEach((font) => {
+const { stdout } = await cmd.output();
+new TextDecoder().decode(stdout).split("\n").forEach((font) => {
   const info = font.split("|"); // splits all font data into an array
   if (info.length == 5) {
     if (response.fontFiles[info[0]] == undefined) { // todo: refactor this
@@ -69,7 +69,6 @@ new TextDecoder().decode(await cmd.output()).split("\n").forEach((font) => {
   }
 });
 
-cmd.close();
 
 const router = new Router();
 router
@@ -82,7 +81,7 @@ router
   // when the user selects a font, figma call this url to download the font as an octet-stream
   .get("/figma/font-file", async (context) => {
     console.log("retrieving font file");
-    const file: string = helpers.getQuery(context).file;
+    const file: string = context.request.url.searchParams.get("file") ?? "";
     context.response.headers.set("Content-Type", "application/json");
     if (response.fontFiles[file] != null) {
       context.response.type = "application/octet-stream";
